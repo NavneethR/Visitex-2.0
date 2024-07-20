@@ -9,6 +9,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import axios from "axios";
+import { Maximize } from "@mui/icons-material";
 
 const PaginatedTable = ({ columns }) => {
   const rowsPerPage = 25;
@@ -38,16 +39,11 @@ const PaginatedTable = ({ columns }) => {
     setPage(0);
   };
 
-  const filteredData = [];
-
-  //   const filteredData = data.filter((row) =>
-  //     columns.some((column) =>
-  //       row[column.id]
-  //         .toString()
-  //         .toLowerCase()
-  //         .includes(searchQuery.toLowerCase())
-  //     )
-  //   );
+  const filteredData = data.filter((row) =>
+    columns.some((column) =>
+      row[column.id].toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
 
   const fetchData = async () => {
     try {
@@ -114,20 +110,24 @@ const PaginatedTable = ({ columns }) => {
               <TableCell>S. No</TableCell>
               <TableCell>Visitor Name</TableCell>
               <TableCell>Employee Name</TableCell>
+              <TableCell>Reason</TableCell>
+              <TableCell>Company Name</TableCell>
+              <TableCell>Company Address</TableCell>
             </TableRow>
           </TableHead>
           <TableBody className="table-dark">
             {loading ? (
               <TableRow>
-                <TableCell colSpan={3} style={{ textAlign: "center" }}>
+                <TableCell colSpan={6} style={{ textAlign: "center" }}>
                   <CircularProgress />
                 </TableCell>
               </TableRow>
             ) : (
               filteredData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
-                  <TableRow key={row.id}>
+                .map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{index + 1}</TableCell>
                     {columns.map((column) => (
                       <TableCell key={column.id}>{row[column.id]}</TableCell>
                     ))}

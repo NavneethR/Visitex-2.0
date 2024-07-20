@@ -7,6 +7,7 @@ const VisitorSchema = mongoose.Schema({
   visitorPhoneNumber: { type: String },
   companyName: { type: String },
   companyAddress: { type: String },
+  photo: { type: String },
   enterTime: { type: Date },
   exitTime: { type: Date },
 });
