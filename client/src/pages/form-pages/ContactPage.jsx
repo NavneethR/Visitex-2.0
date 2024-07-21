@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import OtpInput from "react-otp-input";
-import axios from "axios";
 import { CircularProgress } from "@mui/material";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../firebase/setup";
@@ -13,20 +12,50 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
   const [otp, setOtp] = useState("");
   const [cursor, setCursor] = useState("pointer");
   const [otpLoaderVisible, setOtpLoaderVisible] = useState(false);
+  const [verificationResult, setVerificationResult] = useState(null);
 
-  const handleSendOtp = async () => {
-    try {
-      const recaptcha = new RecaptchaVerifier(auth, "recaptcha", {});
-      const confirmation = await signInWithPhoneNumber(
+  useEffect(() => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
         auth,
-        formData.phoneNumber,
-        recaptcha
+        "recaptcha-container",
+        {
+          size: "invisible",
+        }
       );
-      setSendOtp(true);
-      console.log(confirmation);
-    } catch (error) {
-      console.log(error);
     }
+  }, []);
+
+  const signin = () => {
+    const mynumber = `+${formData.phoneNumber}`;
+    if (mynumber === "" || mynumber.length < 10) return;
+    console.log(mynumber);
+
+    signInWithPhoneNumber(auth, mynumber, window.recaptchaVerifier)
+      .then((result) => {
+        setVerificationResult(result);
+        setSendOtp(true);
+        setOtpVisible(true);
+      })
+      .catch((error) => {
+        alert(error.message);
+        window.location.reload();
+      });
+  };
+
+  const validateOtp = () => {
+    setOtpLoaderVisible(true);
+    if (otp === "" || verificationResult === null) return;
+
+    verificationResult
+      .confirm(otp)
+      .then((result) => {
+        alert("Verification successful!");
+      })
+      .catch((error) => {
+        alert("Invalid OTP. Please try again.");
+        setOtpLoaderVisible(false);
+      });
   };
 
   return (
@@ -56,13 +85,13 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
           <label htmlFor="otp" className="form-label">
             Enter OTP
           </label>
-          <div className="input-group mb-3">
+          <div className="input-group mb-3" style={{ display: "flex" }}>
             <OtpInput
               value={otp}
               onChange={setOtp}
-              numInputs={4}
-              containerStyle={{ gap: "10px" }}
-              inputStyle={{ height: "3em", width: "3em" }}
+              numInputs={6}
+              containerStyle={{ gap: "7px" }}
+              inputStyle={{ height: "2.5em", width: "2.5em" }}
               renderInput={(props) => <input {...props} />}
             />
             <button
@@ -76,12 +105,7 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
                 borderRadius: "5px",
               }}
               type="button"
-              onClick={() => {
-                if (otp.length != 4) {
-                  return;
-                }
-                setOtpLoaderVisible(true);
-              }}
+              onClick={validateOtp}
               disabled={otpLoaderVisible}
             >
               {otpLoaderVisible && (
@@ -122,12 +146,11 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
           <br />
           <button
             className="btn btn-primary"
-            onClick={handleSendOtp}
+            onClick={signin}
             disabled={!otpVisible}
           >
             Send OTP
           </button>
-          <div id="recaptcha"></div>
         </div>
       )}
     </div>

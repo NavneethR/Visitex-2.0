@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VisitorDetailsPage from "./form-pages/VisitorDetailsPage";
 import CompanyDetailsPage from "./form-pages/CompanyDetailsPage";
 import ContactPage from "./form-pages/ContactPage";
@@ -11,9 +11,12 @@ const RegisterPage = () => {
     reason: "a",
     companyName: "a",
     companyAddress: "a",
-    phoneNumber: "",
+    phoneNumber: "919498653630",
   });
-  const [otpVisible, setOtpVisible] = useState(false);
+
+  useEffect(() => {
+    console.log(currentPage);
+  }, [currentPage]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,17 +29,18 @@ const RegisterPage = () => {
   const handleNext = (e) => {
     e.preventDefault();
     setCurrentPage(currentPage + 1);
+    console.log(currentPage);
   };
 
   const handlePrev = (e) => {
     e.preventDefault();
     setCurrentPage(currentPage - 1);
+    console.log(currentPage);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
-    alert(`${formData.phoneNumber}`);
   };
 
   return (
@@ -48,7 +52,7 @@ const RegisterPage = () => {
         <center>Visitor Registration</center>
       </h3>
       <hr />
-      <form onSubmit={currentPage === 3 ? handleSubmit : handleNext}>
+      <div>
         {currentPage === 0 && (
           <VisitorDetailsPage formData={formData} handleChange={handleChange} />
         )}
@@ -60,8 +64,6 @@ const RegisterPage = () => {
             formData={formData}
             handleChange={handleChange}
             setFormData={setFormData}
-            setOtpVisible={setOtpVisible}
-            otpVisible={otpVisible}
           />
         )}
         {currentPage === 3 && <div></div>}
@@ -79,11 +81,15 @@ const RegisterPage = () => {
           ) : (
             <div id="extra-space"></div>
           )}
-          <button className="btn btn-primary" type="submit">
+          <button
+            className="btn btn-primary"
+            type="submit"
+            onClick={currentPage === 3 ? handleSubmit : handleNext}
+          >
             {currentPage === 3 ? "Submit" : "Next"}
           </button>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

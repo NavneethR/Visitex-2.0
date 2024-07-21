@@ -38,7 +38,15 @@ function App() {
           element={<PaginatedTable data={data} columns={columns} />}
         />
       </Route>
-      <Route path="/manager" element={<ManagerLayout />}>
+      <Route
+        path="/manager"
+        element={
+          <>
+            <ManagerLayout />
+            <div id="recaptcha-container"></div>
+          </>
+        }
+      >
         <Route path="register" element={<RegisterPage />} />
       </Route>
     </Routes>
