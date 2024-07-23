@@ -5,14 +5,17 @@ import OtpInput from "react-otp-input";
 import { CircularProgress } from "@mui/material";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { auth } from "../../firebase/setup";
+import { toast, ToastContainer } from "react-toastify";
 
-const ContactPage = ({ formData, handleChange, setFormData }) => {
+const ContactPage = ({ formData, handleChange, setFormData, setVerify }) => {
   const [otpVisible, setOtpVisible] = useState(false);
   const [sendOtp, setSendOtp] = useState(false);
   const [otp, setOtp] = useState("");
   const [cursor, setCursor] = useState("pointer");
   const [otpLoaderVisible, setOtpLoaderVisible] = useState(false);
+  const [sendOtpLoaderVisible, setSendOtpLoaderVisible] = useState(false);
   const [verificationResult, setVerificationResult] = useState(null);
+  const [verified, setVerified] = useState(false);
 
   useEffect(() => {
     if (!window.recaptchaVerifier) {
@@ -27,6 +30,7 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
   }, []);
 
   const signin = () => {
+    setSendOtpLoaderVisible(true);
     const mynumber = `+${formData.phoneNumber}`;
     if (mynumber === "" || mynumber.length < 10) return;
     console.log(mynumber);
@@ -36,6 +40,7 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
         setVerificationResult(result);
         setSendOtp(true);
         setOtpVisible(true);
+        setOtpLoaderVisible(false);
       })
       .catch((error) => {
         alert(error.message);
@@ -50,10 +55,13 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
     verificationResult
       .confirm(otp)
       .then((result) => {
-        alert("Verification successful!");
+        toast.success("Verification successful!");
+        setOtpLoaderVisible(false);
+        setVerify(true);
+        setVerified(true);
       })
       .catch((error) => {
-        alert("Invalid OTP. Please try again.");
+        toast.error("Invalid OTP. Please try again.");
         setOtpLoaderVisible(false);
       });
   };
@@ -106,12 +114,12 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
               }}
               type="button"
               onClick={validateOtp}
-              disabled={otpLoaderVisible}
+              disabled={otpLoaderVisible || verified}
             >
               {otpLoaderVisible && (
                 <CircularProgress style={{ height: "20px", width: "20px" }} />
               )}
-              <div>Verify</div>
+              <div>{verified === false ? "Verify" : "Verified"}</div>
             </button>
           </div>
           <div>
@@ -129,6 +137,7 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
                     phoneNumber: "",
                   }));
                   setSendOtp(false);
+                  setSendOtpLoaderVisible(false);
                   setOtpVisible(false);
                 }}
                 onMouseUp={() => setCursor("default")}
@@ -148,8 +157,18 @@ const ContactPage = ({ formData, handleChange, setFormData }) => {
             className="btn btn-primary"
             onClick={signin}
             disabled={!otpVisible}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "7px",
+              borderRadius: "5px",
+            }}
           >
-            Send OTP
+            {sendOtpLoaderVisible && (
+              <CircularProgress style={{ height: "20px", width: "20px" }} />
+            )}
+            <div>Send OTP</div>
           </button>
         </div>
       )}

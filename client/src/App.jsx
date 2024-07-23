@@ -3,6 +3,8 @@ import AdminLayout from "./Components/Layouts/AdminLayout";
 import PaginatedTable from "./pages/AdminViewPage";
 import RegisterPage from "./pages/RegistrationPage";
 import ManagerLayout from "./Components/Layouts/ManagerLayout";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const columns = [
@@ -13,43 +15,26 @@ function App() {
     { id: "companyAddress", label: "fd" },
   ];
 
-  const generateSampleData = (numRows) => {
-    const names = [
-      "John Doe",
-      "Jane Doe",
-      "Jim Green",
-      "Jake White",
-      "Jill Brown",
-    ];
-    return Array.from({ length: numRows }, (_, index) => ({
-      id: index + 1,
-      name: names[index % names.length],
-      age: Math.floor(Math.random() * 50) + 20,
-    }));
-  };
-
-  const data = generateSampleData(90);
-
   return (
-    <Routes>
-      <Route path="/admin" element={<AdminLayout />}>
+    <div>
+      <ToastContainer />
+      <Routes>
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="view" element={<PaginatedTable columns={columns} />} />
+        </Route>
         <Route
-          path="view"
-          element={<PaginatedTable data={data} columns={columns} />}
-        />
-      </Route>
-      <Route
-        path="/manager"
-        element={
-          <>
-            <ManagerLayout />
-            <div id="recaptcha-container"></div>
-          </>
-        }
-      >
-        <Route path="register" element={<RegisterPage />} />
-      </Route>
-    </Routes>
+          path="/manager"
+          element={
+            <>
+              <ManagerLayout />
+              <div id="recaptcha-container"></div>
+            </>
+          }
+        >
+          <Route path="register" element={<RegisterPage />} />
+        </Route>
+      </Routes>
+    </div>
   );
 }
 
