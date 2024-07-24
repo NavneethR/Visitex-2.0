@@ -2,10 +2,8 @@ const express = require("express");
 require("dotenv").config();
 
 const connectDB = require("./config/db");
-const Visitors = require("./models/VisitorsModel");
 
 const fetchUsers = require("./middlewares/fetchUserData");
-const postUsers = require("./middlewares/postUserData");
 
 const port = process.env.PORT || 8000;
 
@@ -22,11 +20,17 @@ app.get("/api/visitors-list", fetchUsers, async (req, res) => {
   }
 });
 
-app.post("/api/visitors-list", postUsers, async (req, res) => {
+app.post("/api/visitors", async (req, res) => {
   try {
-    return res.status(200).json(req.data);
+    const visitorData = req.body;
+    const newVisitor = new Visitor(visitorData);
+
+    await newVisitor.save();
+
+    res.status(201).json({ message: "Visitor data saved successfully" });
   } catch (error) {
-    console.log(error);
+    console.error("Error saving visitor data:", error);
+    res.status(500).json({ message: "Failed to save visitor data" });
   }
 });
 

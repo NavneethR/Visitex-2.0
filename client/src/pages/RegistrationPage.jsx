@@ -4,6 +4,7 @@ import CompanyDetailsPage from "./form-pages/CompanyDetailsPage";
 import ContactPage from "./form-pages/ContactPage";
 import PhotoPage from "./form-pages/PhotoPage";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const RegisterPage = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -42,9 +43,9 @@ const RegisterPage = () => {
     console.log(currentPage);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    let res = Object.values(formData);
+    let res = Object.values(formData); // Reset form or handle success
     if (formData.photo === "") {
       toast.error("Please take your photo");
       return;
@@ -54,9 +55,29 @@ const RegisterPage = () => {
     } else if (verify === false) {
       toast.error("Please verify your phone number.");
       return;
+    } else setCurrentPage(0);
+    const response = await fetch("http://localhost:8000/api/visitors", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      setFormData({
+        visitorName: "",
+        employeeName: "",
+        reason: "",
+        companyName: "",
+        companyAddress: "",
+        phoneNumber: "",
+        photo: "",
+      });
+      toast.success("Thank you for your submission");
+    } else {
+      console.log(response);
     }
-    setCurrentPage(0);
-    toast.success("Thank you for your submission");
   };
 
   return (

@@ -54,8 +54,8 @@ const ContactPage = ({ formData, handleChange, setFormData, setVerify }) => {
 
     verificationResult
       .confirm(otp)
-      .then((result) => {
-        toast.success("Verification successful!");
+      .then(() => {
+        toast.success("Phone Verified!");
         setOtpLoaderVisible(false);
         setVerify(true);
         setVerified(true);
