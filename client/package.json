@@ -21,7 +21,8 @@
     "react-phone-number-input": "^3.4.3",
     "react-router-dom": "^6.24.1",
     "react-webcam": "^7.2.0",
-    "toastify": "^2.0.1"
+    "toastify": "^2.0.1",
+    "react-toastify": "^10.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
