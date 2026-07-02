@@ -4,7 +4,7 @@ import PaginatedTable from "./pages/AdminViewPage";
 import RegisterPage from "./pages/RegistrationPage";
 import ManagerLayout from "./Components/Layouts/ManagerLayout";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const columns = [
